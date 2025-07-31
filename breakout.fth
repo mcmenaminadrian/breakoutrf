@@ -223,26 +223,32 @@ VARIABLE OLDBALLXY 1 CELLS ALLOT
   BALLXYV @ DUP
   0= SWAP WIDTH = OR
   IF \ hit sides
+    ERASEBALL
     SIDEBALL
+    MOVEBALL
   ELSE
     BALLXYV CELL+ @
     0=
     IF \ hit top
+      ERASEBALL
       TOPBALL
+      MOVEBALL
     ELSE 
       BALLXYV CELL+ @ BALLXYV @ MVINCH
       A_COLOR AND
-      0=
       IF
-        DRAWBALL
-      ELSE
-        TOPBALL
-        BALLXYV CELL+ @
+        BALLXYV CELL+ @ 
         DEEP 1- =
         IF
+          ERASEBALL
+          TOPBALL
+          MOVEBALL
         ELSE
           DRAWBALL
+          TOPBALL
         THEN
+      ELSE
+        DRAWBALL
       THEN
     THEN
   THEN
@@ -272,6 +278,12 @@ VARIABLE OLDBALLXY 1 CELLS ALLOT
   NODELAYOFFSTD ERRORDETECT
 ;
 
+: CHECKOUTOFBOUNDS
+  ( -- b)
+  BALLXYV CELL+ @
+  DEEP =
+;
+
 
 : GAME
   ( -- )
@@ -280,6 +292,7 @@ VARIABLE OLDBALLXY 1 CELLS ALLOT
    DISPLAYSET
    GETCH DUP
    DISPLAYRESET
+   10 MS
    -1 = IF DROP ELSE 
      DUP
      [ HEX 51 ] LITERAL =
@@ -288,13 +301,12 @@ VARIABLE OLDBALLXY 1 CELLS ALLOT
      THEN     \ capital Q to quit
      PROCESSKEYBAT
    THEN
+   10 MS
    PROCESSBALL
-   BALLXYV CELL+ @
-   DEEP =
+   CHECKOUTOFBOUNDS
    IF
      LEAVE
    THEN
-   20 MS 
  AGAIN
 ;
 
