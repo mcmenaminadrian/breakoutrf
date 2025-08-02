@@ -246,6 +246,11 @@ VARIABLE CURRENT_RANDOM
   0= SWAP WIDTH = OR
   IF \ hit sides
     ERASEBALL
+    BALLXYV CELL+ @
+    0=
+    IF
+      TOPBALL
+    THEN
     SIDEBALL
     MOVEBALL
   ELSE
@@ -270,6 +275,7 @@ VARIABLE CURRENT_RANDOM
           TOPBALL
           [ DECIMAL 10 ] LITERAL  SCORE +!
           -1 BLOCKCOUNT +!
+          BEEP DROP  \ ignore output as terminal may not support
         THEN
       ELSE
         DRAWBALL
@@ -356,6 +362,19 @@ VARIABLE CURRENT_RANDOM
  AGAIN
 ;
 
+: NEXTBALL   \ hit s to send the next ball
+  ( -- )
+  BEGIN
+   DISPLAYSET
+   GETCH
+   [CHAR] s =
+   IF
+    DISPLAYRESET
+    LEAVE
+   THEN
+  AGAIN
+;
+
 : BREAKOUT
  ( -- )
  DECIMAL
@@ -376,8 +395,9 @@ VARIABLE CURRENT_RANDOM
  BEGIN ATTEMPTS @ MAXATTEMPTS <
  WHILE
    GAME
+   FLASH DROP \ ignore output as terminal may not support
    1 ATTEMPTS +!
-   GETCH ERRORDETECT
+   NEXTBALL
  REPEAT
  CURS_NORMAL
  ENDWIN
